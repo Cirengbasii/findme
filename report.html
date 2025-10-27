@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporkan Barang — FindME</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://kit.fontawesome.com/a2e0bf0a56.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="navbar glass">
+    <div class="logo"><i class="fa-solid fa-magnifying-glass-location"></i> Find<span>ME</span></div>
+    <nav>
+      <a href="index.html">Beranda</a>
+      <a href="browse.html">Lihat Barang</a>
+      <a href="report.html" class="active">Laporkan</a>
+      <a href="contact.html">Hubungi</a>
+    </nav>
+    <a href="login.html" class="login-btn">Login</a>
+  </header>
+
+  <section class="report">
+    <h2>Laporkan Barang Hilang / Ditemukan</h2>
+    <form class="glass form-box">
+      <label>Nama Barang</label>
+      <input type="text" placeholder="Contoh: Charger Laptop Asus">
+
+      <label>Jenis Laporan</label>
+      <select>
+        <option value="lost">Hilang</option>
+        <option value="found">Ditemukan</option>
+      </select>
+
+      <label>Lokasi</label>
+      <input type="text" placeholder="Contoh: Lab 1212 Kampus D">
+
+      <label>Deskripsi</label>
+      <textarea placeholder="Tuliskan ciri-ciri barang..."></textarea>
+
+      <label>Upload Foto</label>
+      <input type="file">
+
+      <button type="submit" class="btn-primary">Kirim Laporan</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>© 2025 FindME — Universitas Gunadarma</p>
+  </footer>
+</body>
+</html>

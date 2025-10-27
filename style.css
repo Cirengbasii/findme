@@ -1,0 +1,394 @@
+/* ======================================
+   🌐 FINDME — Global Style
+======================================*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f7fbff, #e8f0ff);
+  color: #1a1a1a;
+  overflow-x: hidden;
+}
+
+/* Glass effect reusable */
+.glass {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* ======================================
+   🌈 Navbar
+======================================*/
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 8%;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #1d3b8b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.logo span {
+  color: #4a6cf7;
+}
+
+nav {
+  display: flex;
+  gap: 24px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #1a1a1a;
+  font-weight: 500;
+  transition: 0.3s;
+  position: relative;
+}
+
+nav a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background: #4a6cf7;
+  left: 0;
+  bottom: -4px;
+  transition: width 0.3s ease;
+}
+
+nav a:hover::after,
+nav a.active::after {
+  width: 100%;
+}
+
+.login-btn {
+  background: #4a6cf7;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.login-btn:hover {
+  background: #1d3b8b;
+  transform: scale(1.05);
+}
+
+/* ======================================
+   🏠 Hero Section
+======================================*/
+.hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 100px 10%;
+  min-height: 80vh;
+  background: linear-gradient(135deg, rgba(74,108,247,0.08), rgba(255,255,255,0.5));
+}
+
+.hero-content h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1d3b8b;
+}
+.hero-content h1 span {
+  color: #4a6cf7;
+}
+
+.hero-content p {
+  margin: 16px 0 28px;
+  font-size: 1.1rem;
+  color: #444;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.btn-primary {
+  background: #4a6cf7;
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #1d3b8b;
+  transform: scale(1.05);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid #4a6cf7;
+  color: #4a6cf7;
+}
+.btn-secondary:hover {
+  background: #4a6cf7;
+  color: #fff;
+}
+
+/* ======================================
+   ⚙️ How It Works
+======================================*/
+.how {
+  padding: 70px 8%;
+  text-align: center;
+}
+.how h2 {
+  color: #1d3b8b;
+  font-size: 1.8rem;
+  margin-bottom: 40px;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+}
+.step {
+  padding: 25px;
+  transition: 0.3s;
+}
+.step i {
+  font-size: 2.2rem;
+  color: #4a6cf7;
+  margin-bottom: 12px;
+}
+.step:hover {
+  transform: translateY(-6px);
+}
+
+/* ======================================
+   📦 Browse Page
+======================================*/
+.browse {
+  padding: 60px 8%;
+  text-align: center;
+}
+.browse h2 {
+  color: #1d3b8b;
+  margin-bottom: 30px;
+}
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+.item-card {
+  padding: 12px;
+  border-radius: 16px;
+  transition: all 0.3s;
+  overflow: hidden;
+}
+.item-card img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.item-info h4 {
+  color: #1d3b8b;
+}
+.item-info p {
+  font-size: 0.9rem;
+  color: #555;
+}
+.tag {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+.tag.lost {
+  background: #ffebeb;
+  color: #c72525;
+}
+.tag.found {
+  background: #e8f9f1;
+  color: #0c8c4a;
+}
+.item-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+/* ======================================
+   📝 Report Page
+======================================*/
+.report {
+  padding: 60px 8%;
+  text-align: center;
+}
+.report h2 {
+  color: #1d3b8b;
+  margin-bottom: 20px;
+}
+.form-box {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 30px;
+  text-align: left;
+}
+.form-box label {
+  font-weight: 600;
+  color: #1d3b8b;
+}
+.form-box input, .form-box select, .form-box textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  margin-bottom: 18px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.6);
+  outline: none;
+  transition: 0.3s;
+}
+.form-box input:focus, .form-box textarea:focus {
+  border: 1px solid #4a6cf7;
+  box-shadow: 0 0 6px rgba(74,108,247,0.4);
+}
+
+/* ======================================
+   📞 Contact Page
+======================================*/
+.contact {
+  padding: 70px 8%;
+  text-align: center;
+}
+.contact h2 {
+  color: #1d3b8b;
+  margin-bottom: 10px;
+}
+.contact-box {
+  max-width: 400px;
+  margin: 30px auto;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.95rem;
+}
+.contact-box i {
+  color: #4a6cf7;
+  margin-right: 8px;
+}
+
+/* ======================================
+   🔐 Login Page
+======================================*/
+.login-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #eaf2ff, #f8fbff);
+}
+.login-container {
+  padding: 40px;
+  width: 350px;
+  text-align: center;
+}
+.login-container h2 {
+  color: #1d3b8b;
+}
+.login-container span {
+  color: #4a6cf7;
+}
+.login-container input {
+  width: 100%;
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.6);
+  transition: 0.3s;
+}
+.login-container input:focus {
+  border: 1px solid #4a6cf7;
+}
+.login-container .btn-primary {
+  width: 100%;
+  margin-top: 12px;
+}
+.small-text {
+  font-size: 0.85rem;
+  margin-top: 12px;
+}
+
+/* ======================================
+   ⚡ Footer
+======================================*/
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #666;
+}
+footer .socials {
+  margin-top: 8px;
+}
+footer .socials a {
+  color: #4a6cf7;
+  margin: 0 6px;
+  transition: 0.3s;
+}
+footer .socials a:hover {
+  color: #1d3b8b;
+  transform: scale(1.2);
+}
+
+/* ======================================
+   📱 Responsive
+======================================*/
+@media (max-width: 850px) {
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+  .hero-buttons {
+    flex-direction: column;
+  }
+  .navbar nav {
+    display: none;
+  }
+  .navbar.active nav {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    right: 10%;
+    background: rgba(255,255,255,0.95);
+    border-radius: 12px;
+    padding: 10px 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+}
