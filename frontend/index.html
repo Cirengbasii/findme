@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lost & Found - Home</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <div class="logo">Lost & Found</div>
+    <ul>
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="lost.html">Report Lost</a></li>
+      <li><a href="found.html">Report Found</a></li>
+      <li><a href="claim.html">Claim Item</a></li>
+    </ul>
+  </nav>
+  <header class="hero">
+    <h1>Welcome to Lost & Found</h1>
+    <p>Your trusted platform for reuniting lost items with their owners. Help others and get help when you need it most.</p>
+    <div class="quick-links">
+      <a href="lost.html" class="btn">Report Lost Item</a>
+      <a href="found.html" class="btn">Report Found Item</a>
+      <a href="claim.html" class="btn">Claim an Item</a>
+    </div>
+    <form id="searchForm" class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search for lost or found items...">
+      <button type="submit">Search</button>
+    </form>
+  </header>
+  <main>
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Lost Items</h3>
+          <p class="stat-number" id="lostCount">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Found Items</h3>
+          <p class="stat-number" id="foundCount">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Successful Claims</h3>
+          <p class="stat-number" id="claimsCount">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Happy Reunions</h3>
+          <p class="stat-number" id="reunionsCount">0</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="recent-items">
+      <h2>Recently Reported Items</h2>
+      <div class="card-grid" id="itemGrid">
+        <!-- Items will be loaded dynamically -->
+      </div>
+    </section>
+
+    <section class="how-it-works">
+      <h2>How It Works</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Report</h3>
+          <p>Report your lost item or submit a found item with detailed information and photos.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>Match</h3>
+          <p>Our system helps match lost and found items based on descriptions and locations.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>Verify</h3>
+          <p>Claimants provide proof of ownership to ensure items go to the right person.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>Contact: support@lostfound.com | &copy; 2025 Lost & Found</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claim Item - Lost & Found</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <div class="logo">Lost & Found</div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="lost.html">Report Lost</a></li>
+      <li><a href="found.html">Report Found</a></li>
+      <li><a href="claim.html" class="active">Claim Item</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <h1>Claim an Item</h1>
+      <p>Think you've found your lost item? Fill out the claim form below with proof of ownership.</p>
+    </div>
+
+    <form id="claimForm" class="item-form">
+      <h2>Item Information</h2>
+      
+      <div class="form-row">
+        <label for="claimItemId">Item ID or Name *</label>
+        <input type="text" id="claimItemId" name="itemId" required placeholder="Enter the item ID or name from the listing">
+      </div>
+
+      <div class="form-row">
+        <label for="claimDescription">Describe the Item *</label>
+        <textarea id="claimDescription" name="description" required placeholder="Describe the item you're claiming in detail (color, brand, model, distinctive features, etc.)" rows="4"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label for="claimProof">Proof of Ownership *</label>
+        <input type="file" id="claimProof" name="proof" accept="image/*,.pdf" required>
+        <div id="claimProofPreview" class="img-preview"></div>
+        <small>Upload photos of receipts, purchase documents, or other proof of ownership</small>
+      </div>
+
+      <h3>Your Contact Information</h3>
+      
+      <div class="form-row">
+        <label for="claimName">Your Name *</label>
+        <input type="text" id="claimName" name="contactName" required placeholder="Your full name">
+      </div>
+
+      <div class="form-row">
+        <label for="claimEmail">Email Address *</label>
+        <input type="email" id="claimEmail" name="contactEmail" required placeholder="your@email.com">
+      </div>
+
+      <div class="form-row">
+        <label for="claimPhone">Phone Number *</label>
+        <input type="tel" id="claimPhone" name="contactPhone" required placeholder="9876543210">
+      </div>
+
+      <div class="form-row">
+        <label for="claimAddress">Address *</label>
+        <textarea id="claimAddress" name="address" required placeholder="Your complete address for item delivery" rows="3"></textarea>
+      </div>
+
+      <h3>Additional Information</h3>
+      
+      <div class="form-row">
+        <label for="claimStory">How did you lose the item? *</label>
+        <textarea id="claimStory" name="story" required placeholder="Tell us the story of how you lost this item (when, where, circumstances)" rows="3"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label for="claimDistinctive">Distinctive Features *</label>
+        <textarea id="claimDistinctive" name="distinctive" required placeholder="Describe any unique features, scratches, stickers, or modifications that only you would know" rows="3"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label for="claimReward">Willing to pay reward? (Optional)</label>
+        <input type="number" id="claimReward" name="reward" placeholder="Amount in ₹" min="0">
+      </div>
+
+      <div class="form-row">
+        <label for="claimPreferredContact">Preferred Contact Method</label>
+        <select id="claimPreferredContact" name="preferredContact">
+          <option value="email">Email</option>
+          <option value="phone">Phone Call</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="any">Any method</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>
+          <input type="checkbox" id="claimVerification" name="verification" required>
+          I understand that I may be asked to provide additional verification and that false claims may result in account suspension
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label>
+          <input type="checkbox" id="claimTerms" name="terms" required>
+          I agree to the terms of service and privacy policy
+        </label>
+      </div>
+
+      <button type="submit" class="btn">Submit Claim Request</button>
+    </form>
+
+    <div class="help-section">
+      <h3>Claim Process</h3>
+      <ol>
+        <li><strong>Submit your claim</strong> with detailed information and proof of ownership</li>
+        <li><strong>Verification</strong> - Our team will review your claim and supporting documents</li>
+        <li><strong>Matching</strong> - We'll compare your claim with found item reports</li>
+        <li><strong>Contact</strong> - If a match is found, we'll connect you with the finder</li>
+        <li><strong>Collection</strong> - Arrange to collect your item from the finder</li>
+      </ol>
+      
+      <h3>Tips for Successful Claims</h3>
+      <ul>
+        <li>Provide as much detail as possible about the item</li>
+        <li>Upload clear photos of receipts or proof of purchase</li>
+        <li>Describe unique features that only you would know</li>
+        <li>Be honest and accurate in your descriptions</li>
+        <li>Respond promptly to verification requests</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    <p>Contact: support@lostfound.com | &copy; 2025 Lost & Found</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

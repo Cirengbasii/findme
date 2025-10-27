@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - Lost & Found</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Login page specific styles */
+      .login-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        display: grid;
+        grid-template-columns: 1fr 450px;
+        gap: 3rem;
+        align-items: start;
+        padding: 1rem;
+      }
+
+      .login-info {
+        padding: 2rem 1rem;
+      }
+
+      .login-info h1 {
+        color: var(--primary-dark);
+        margin-bottom: 1rem;
+        font-size: 2.2rem;
+      }
+
+      .login-info .lead {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        color: #666;
+      }
+
+      .login-info ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .login-info li {
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .login-info li::before {
+        content: "✓";
+        color: var(--green);
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+
+      .auth-tabs {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+
+      .tab-headers {
+        display: flex;
+        background: #f8f9fa;
+      }
+
+      .tab-header {
+        flex: 1;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #666;
+        transition: all 0.3s;
+      }
+
+      .tab-header.active {
+        background: var(--white);
+        color: var(--primary-dark);
+        border-bottom: 3px solid var(--primary);
+      }
+
+      .tab-content {
+        padding: 2rem;
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .form-row {
+        margin-bottom: 1.2rem;
+      }
+
+      .form-row label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #333;
+      }
+
+      .form-row input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      .form-row input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+
+      .remember-me input {
+        width: auto;
+      }
+
+      .btn-submit {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-bottom: 1rem;
+      }
+
+      .btn-submit:hover {
+        background: var(--primary-dark);
+      }
+
+      .btn-submit:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .divider {
+        text-align: center;
+        margin: 1.5rem 0;
+        color: #666;
+        position: relative;
+      }
+
+      .divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #ddd;
+        z-index: 1;
+      }
+
+      .divider span {
+        background: white;
+        padding: 0 1rem;
+        position: relative;
+        z-index: 2;
+      }
+
+      .social-login {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .social-btn {
+        flex: 1;
+        padding: 0.75rem;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .social-btn:hover {
+        border-color: var(--primary);
+        background: #f8f9fa;
+      }
+
+      .error-message {
+        color: var(--red);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        display: none;
+      }
+
+      .success-message {
+        color: var(--green);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        .login-container {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+          padding: 0.5rem;
+        }
+
+        .login-info h1 {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">Lost & Found</div>
+    </nav>
+
+    <main>
+      <section class="login-container">
+        <div class="login-info">
+          <h1>Welcome to Lost & Found</h1>
+          <p class="lead">
+            Your secure platform for reporting lost items, returning found
+            belongings, and claiming your possessions. Join our community to
+            help reunite people with their lost items.
+          </p>
+
+          <h3>Why create an account?</h3>
+          <ul>
+            <li>Track your reports and claims</li>
+            <li>Securely upload proof of ownership</li>
+            <li>Get notified when matching items appear</li>
+            <li>Manage your contact information</li>
+          </ul>
+        </div>
+
+        <div class="auth-tabs">
+          <div class="tab-headers">
+            <button class="tab-header active" onclick="switchTab('login')">
+              Login
+            </button>
+            <button class="tab-header" onclick="switchTab('signup')">
+              Sign Up
+            </button>
+          </div>
+
+          <!-- Login Tab -->
+          <div id="loginTab" class="tab-content active">
+            <form id="loginForm" novalidate>
+              <div class="form-row">
+                <label for="loginEmail">Email Address *</label>
+                <input
+                  type="email"
+                  id="loginEmail"
+                  name="email"
+                  required
+                  placeholder="your@email.com"
+                  autocomplete="username"
+                />
+              </div>
+
+              <div class="form-row">
+                <label for="loginPassword">Password *</label>
+                <input
+                  type="password"
+                  id="loginPassword"
+                  name="password"
+                  required
+                  autocomplete="current-password"
+                />
+              </div>
+
+              <div class="remember-me">
+                <input type="checkbox" id="rememberMe" name="rememberMe" />
+                <label for="rememberMe">Remember me</label>
+              </div>
+
+              <button type="submit" class="btn-submit">Sign In</button>
+              <div id="loginError" class="error-message"></div>
+              <div id="loginSuccess" class="success-message"></div>
+
+              <div class="divider">
+                <span>or</span>
+              </div>
+
+              <div class="social-login">
+                <button
+                  type="button"
+                  class="social-btn"
+                  onclick="socialLogin('google')"
+                >
+                  <span>🔍</span> Google
+                </button>
+                <button
+                  type="button"
+                  class="social-btn"
+                  onclick="socialLogin('facebook')"
+                >
+                  <span>📘</span> Facebook
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Signup Tab -->
+          <div id="signupTab" class="tab-content">
+            <form id="signupForm" novalidate>
+              <div class="form-row">
+                <label for="signupName">Full Name *</label>
+                <input
+                  type="text"
+                  id="signupName"
+                  name="name"
+                  required
+                  placeholder="John Doe"
+                  autocomplete="name"
+                />
+              </div>
+
+              <div class="form-row">
+                <label for="signupEmail">Email Address *</label>
+                <input
+                  type="email"
+                  id="signupEmail"
+                  name="email"
+                  required
+                  placeholder="your@email.com"
+                  autocomplete="username"
+                />
+              </div>
+
+              <div class="form-row">
+                <label for="signupPhone">Contact Number *</label>
+                <input
+                  type="tel"
+                  id="signupPhone"
+                  name="phone"
+                  required
+                  placeholder="9876543210"
+                  autocomplete="tel"
+                />
+              </div>
+
+              <div class="form-row">
+                <label for="signupPassword">Password *</label>
+                <input
+                  type="password"
+                  id="signupPassword"
+                  name="password"
+                  required
+                  placeholder="Minimum 6 characters"
+                  autocomplete="new-password"
+                />
+              </div>
+
+              <div class="form-row">
+                <label for="confirmPassword">Confirm Password *</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  required
+                  placeholder="Repeat your password"
+                  autocomplete="new-password"
+                />
+              </div>
+
+              <button type="submit" class="btn-submit">Create Account</button>
+              <div id="signupError" class="error-message"></div>
+              <div id="signupSuccess" class="success-message"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Contact: support@lostfound.com | &copy; 2025 Lost & Found</p>
+    </footer>
+
+    <script>
+      // Tab switching functionality
+      function switchTab(tab) {
+        // Update tab headers
+        document
+          .querySelectorAll(".tab-header")
+          .forEach((header) => header.classList.remove("active"));
+        document
+          .querySelector(`[onclick="switchTab('${tab}')"]`)
+          .classList.add("active");
+
+        // Update tab content
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((content) => content.classList.remove("active"));
+        document.getElementById(`${tab}Tab`).classList.add("active");
+
+        // Clear messages
+        clearMessages();
+      }
+
+      // Clear error/success messages
+      function clearMessages() {
+        document
+          .querySelectorAll(".error-message, .success-message")
+          .forEach((msg) => {
+            msg.style.display = "none";
+            msg.textContent = "";
+          });
+      }
+
+      // Show error message
+      function showError(elementId, message) {
+        const errorEl = document.getElementById(elementId);
+        errorEl.textContent = message;
+        errorEl.style.display = "block";
+        errorEl.style.color = "var(--red)";
+      }
+
+      // Show success message
+      function showSuccess(elementId, message) {
+        const successEl = document.getElementById(elementId);
+        successEl.textContent = message;
+        successEl.style.display = "block";
+        successEl.style.color = "var(--green)";
+      }
+
+      // Validate email format
+      function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      // Validate phone number (10 digits)
+      function isValidPhone(phone) {
+        return /^\d{10}$/.test(phone.replace(/\D/g, ""));
+      }
+
+      // Get stored users
+      function getStoredUsers() {
+        const users = localStorage.getItem("lostfound_users");
+        return users ? JSON.parse(users) : {};
+      }
+
+      // Store users
+      function storeUsers(users) {
+        localStorage.setItem("lostfound_users", JSON.stringify(users));
+      }
+
+      // Login form handler
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          clearMessages();
+
+          const email = document.getElementById("loginEmail").value.trim();
+          const password = document
+            .getElementById("loginPassword")
+            .value.trim();
+
+          // Validation
+          if (!email || !password) {
+            showError("loginError", "Please fill in all fields.");
+            return;
+          }
+
+          if (!isValidEmail(email)) {
+            showError("loginError", "Please enter a valid email address.");
+            return;
+          }
+
+          // Check credentials
+          const users = getStoredUsers();
+          if (users[email] && users[email].password === password) {
+            // Login successful
+            const userData = {
+              name: users[email].name,
+              email: email,
+              phone: users[email].phone,
+            };
+
+            // Store current user session
+            localStorage.setItem("lostfound_user", JSON.stringify(userData));
+
+            showSuccess("loginSuccess", "Login successful! Redirecting...");
+            setTimeout(() => {
+              window.location.href = "index.html";
+            }, 1000);
+          } else {
+            showError("loginError", "Invalid email or password.");
+          }
+        });
+
+      // Signup form handler
+      document
+        .getElementById("signupForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          clearMessages();
+
+          const name = document.getElementById("signupName").value.trim();
+          const email = document.getElementById("signupEmail").value.trim();
+          const phone = document.getElementById("signupPhone").value.trim();
+          const password = document
+            .getElementById("signupPassword")
+            .value.trim();
+          const confirmPassword = document
+            .getElementById("confirmPassword")
+            .value.trim();
+
+          // Validation
+          if (!name || !email || !phone || !password || !confirmPassword) {
+            showError("signupError", "Please fill in all fields.");
+            return;
+          }
+
+          if (!isValidEmail(email)) {
+            showError("signupError", "Please enter a valid email address.");
+            return;
+          }
+
+          if (!isValidPhone(phone)) {
+            showError(
+              "signupError",
+              "Please enter a valid 10-digit phone number."
+            );
+            return;
+          }
+
+          if (password.length < 6) {
+            showError(
+              "signupError",
+              "Password must be at least 6 characters long."
+            );
+            return;
+          }
+
+          if (password !== confirmPassword) {
+            showError("signupError", "Passwords do not match.");
+            return;
+          }
+
+          // Check if user already exists
+          const users = getStoredUsers();
+          if (users[email]) {
+            showError(
+              "signupError",
+              "An account with this email already exists."
+            );
+            return;
+          }
+
+          // Create new user
+          users[email] = {
+            name: name,
+            email: email,
+            phone: phone,
+            password: password,
+            createdAt: new Date().toISOString(),
+          };
+
+          storeUsers(users);
+
+          // Auto-login after signup
+          const userData = { name, email, phone };
+          localStorage.setItem("lostfound_user", JSON.stringify(userData));
+
+          showSuccess(
+            "signupSuccess",
+            "Account created successfully! Redirecting..."
+          );
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1000);
+        });
+
+      // Social login placeholder
+      function socialLogin(provider) {
+        alert(
+          `${
+            provider.charAt(0).toUpperCase() + provider.slice(1)
+          } login is not implemented in this demo.`
+        );
+      }
+
+      // Check if user is already logged in
+      if (localStorage.getItem("lostfound_user")) {
+        window.location.href = "index.html";
+      }
+    </script>
+
+    <script src="script.js"></script>
+  </body>
+</html>
