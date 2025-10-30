@@ -6,8 +6,14 @@ from routes.item_routes import item_routes
 app = Flask(__name__)
 CORS(app)
 
+# ✅ daftar blueprint dengan prefix yang pas
 app.register_blueprint(auth_routes, url_prefix="/api/auth")
-app.register_blueprint(item_routes, url_prefix="/api")
+app.register_blueprint(item_routes, url_prefix="/api/items")
+
+# ✅ cek daftar route aktif
+print("✅ Blueprints terdaftar:")
+for rule in app.url_map.iter_rules():
+    print(rule)
 
 @app.route('/')
 def home():

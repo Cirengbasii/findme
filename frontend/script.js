@@ -1,36 +1,84 @@
-// Authentication System
-const AUTH_KEY = 'lostfound_user';
-const USERS_KEY = 'lostfound_users';
+// === Proteksi Halaman ===
+document.addEventListener("DOMContentLoaded", () => {
+  const currentUser = localStorage.getItem("lostfound_user");
 
-// Check if user is logged in
+  // Jika user belum login dan buka halaman selain login/register
+  if (
+    !currentUser &&
+    !window.location.pathname.includes("login.html") &&
+    !window.location.pathname.includes("register.html")
+  ) {
+    window.location.href = "login.html";
+  }
+});
+
+const API_BASE_URL = "http://127.0.0.1:5000/api/auth";
+const AUTH_KEY = "lostfound_user"; // simpan token + nama
+
+// Cek apakah user login
 function isLoggedIn() {
   return localStorage.getItem(AUTH_KEY) !== null;
 }
 
-// Get current user
+// Ambil user saat ini
 function getCurrentUser() {
-  const userData = localStorage.getItem(AUTH_KEY);
-  return userData ? JSON.parse(userData) : null;
+  const data = localStorage.getItem(AUTH_KEY);
+  return data ? JSON.parse(data) : null;
 }
 
-// Login user
-function loginUser(userData) {
-  localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
+// Login user ke backend Flask
+async function loginUserBackend(email, password) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showAlert(data.message || "Login gagal.", "danger");
+      return null;
+    }
+
+    localStorage.setItem(AUTH_KEY, JSON.stringify({ token: data.token, email }));
+    showAlert("✅ Login berhasil!", "success");
+    return data;
+  } catch (err) {
+    console.error(err);
+    showAlert("Terjadi kesalahan server.", "danger");
+    return null;
+  }
 }
 
-// Logout user
+// Register user ke backend Flask
+async function registerUserBackend(name, email, phone, password) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, phone, password }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showAlert(data.message || "Registrasi gagal.", "danger");
+      return null;
+    }
+
+    showAlert("✅ Registrasi berhasil! Silakan login.", "success");
+    return data;
+  } catch (err) {
+    console.error(err);
+    showAlert("Terjadi kesalahan server.", "danger");
+    return null;
+  }
+}
+
+// Logout
 function logoutUser() {
   localStorage.removeItem(AUTH_KEY);
-  window.location.href = 'login.html';
-}
-
-// Redirect to login if not authenticated
-function requireAuth() {
-  if (!isLoggedIn() && !window.location.pathname.includes('login.html')) {
-    window.location.href = 'login.html';
-    return false;
-  }
-  return true;
+  window.location.href = "login.html";
 }
 
 // Initialize authentication check on page load
@@ -157,9 +205,41 @@ function validateForm(form, fields) {
 
 // Enhanced form validation for lost items
 const lostForm = document.getElementById('lostForm');
+
 if (lostForm) {
-  lostForm.addEventListener('submit', e => {
-    e.preventDefault();
+ 
+lostForm.addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const title = document.getElementById('lostName').value.trim();
+  const description = document.getElementById('lostDesc').value.trim();
+  const location = document.getElementById('lostLocation').value.trim();
+  const user_id = 1; // buat tes aja
+
+  try {
+    const res = await fetch('http://127.0.0.1:5000/api/items', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        description,
+        status: 'lost',
+        location,
+        user_id
+      })
+    });
+
+    const data = await res.json();
+    console.log(data);
+    alert('Item berhasil dikirim!');
+  } catch (err) {
+    console.error('Error:', err);
+    alert('Gagal kirim item!');
+  }
+});
+
+}
+
     
     // Get form data
     const formData = new FormData(lostForm);
@@ -211,13 +291,34 @@ if (lostForm) {
       isValid = false;
     }
 
-    if (isValid) {
-      // Store lost item data
-      const lostItems = JSON.parse(localStorage.getItem('lostfound_lost_items') || '[]');
-      lostItems.push(lostData);
-      localStorage.setItem('lostfound_lost_items', JSON.stringify(lostItems));
-      
-      showAlert('Lost item reported successfully! We\'ll help you find it.', 'success');
+if (isValid) {
+  try {
+    const res = await fetch("http://127.0.0.1:5000/api/items", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: formData.get("itemName"),
+        description: formData.get("description"),
+        status: "lost",
+        location: formData.get("location"),
+        user_id: getCurrentUser()?.email || "anonymous"
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      showAlert("✅ Lost item reported successfully!", "success");
+      lostForm.reset();
+      document.getElementById("lostImagePreview").innerHTML = "";
+    } else {
+      showAlert(data.message || "Failed to report lost item.", "danger");
+    }
+  } catch (err) {
+    console.error(err);
+    showAlert("Server error occurred.", "danger");
+  }
+}
       lostForm.reset();
       document.getElementById('lostImagePreview').innerHTML = '';
       lostForm.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
@@ -295,11 +396,36 @@ if (foundForm) {
       terms.classList.remove('is-invalid');
     }
 
-    if (isValid) {
-      // Store found item data
-      const foundItems = JSON.parse(localStorage.getItem('lostfound_found_items') || '[]');
-      foundItems.push(foundData);
-      localStorage.setItem('lostfound_found_items', JSON.stringify(foundItems));
+if (isValid) {
+  try {
+    const res = await fetch("http://127.0.0.1:5000/api/items", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: formData.get("itemName"),
+        description: formData.get("description"),
+        status: "found",
+        location: formData.get("location"),
+        user_id: getCurrentUser()?.id || 1
+
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      showAlert("✅ Found item reported successfully!", "success");
+      foundForm.reset();
+      document.getElementById("foundImagePreview").innerHTML = "";
+    } else {
+      showAlert(data.message || "Failed to report found item.", "danger");
+    }
+  } catch (err) {
+    console.error(err);
+    showAlert("Server error occurred.", "danger");
+  }
+}
+
       
       showAlert('Found item reported successfully! Thank you for helping reunite lost items with their owners.', 'success');
       foundForm.reset();
@@ -575,3 +701,103 @@ initializeDemoData();
 if (window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/')) {
   loadHomePageData();
 }
+
+// Initialize home page data when on index page
+if (window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/')) {
+  loadHomePageData();
+}
+
+// =============================
+// LOGIN & REGISTER HANDLERS
+// =============================
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
+
+  // LOGIN
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      const result = await loginUserBackend(email, password);
+      if (result) {
+        localStorage.setItem(
+          AUTH_KEY,
+          JSON.stringify({ token: result.token, email })
+        );
+        showAlert("Login berhasil! Mengalihkan...", "success");
+        setTimeout(() => (window.location.href = "index.html"), 1500);
+      }
+    });
+  }
+
+  // REGISTER
+  if (registerForm) {
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("regName").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const phone = document.getElementById("regPhone").value.trim();
+      const password = document.getElementById("regPassword").value.trim();
+
+      const result = await registerUserBackend(name, email, phone, password);
+      if (result) {
+        showAlert("Registrasi berhasil! Silakan login.", "success");
+        registerForm.reset();
+      }
+    });
+  }
+});
+
+// === Logout Function ===
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("lostfound_user"); // hapus data login
+      alert("Kamu sudah logout.");
+      setTimeout(() => {
+        window.location.href = "login.html"; // arahkan ke halaman login
+      }, 300);
+    });
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('lostForm');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = {
+      title: document.getElementById('lostName').value,
+      description: document.getElementById('lostDesc').value,
+      location: document.getElementById('lostLocation').value,
+      status: 'lost',
+      user_id: 1
+    };
+
+    console.log('Data dikirim:', data); // tes di console browser
+
+    try {
+      const res = await fetch('http://127.0.0.1:5000/api/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      console.log('Respon dari server:', result);
+
+      alert('Laporan berhasil dikirim!');
+      form.reset();
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Gagal mengirim data');
+    }
+  });
+});
