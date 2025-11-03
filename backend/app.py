@@ -4,7 +4,8 @@ from routes.auth_routes import auth_routes
 from routes.item_routes import item_routes
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+
 
 # ✅ daftar blueprint dengan prefix yang pas
 app.register_blueprint(auth_routes, url_prefix="/api/auth")
