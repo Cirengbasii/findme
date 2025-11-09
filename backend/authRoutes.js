@@ -12,6 +12,8 @@ const pool = new Pool({
 
 // REGISTER
 router.post("/register", async (req, res) => {
+  console.log("📩 Data diterima:", req.body);
+  
   const { name, email, phone, password } = req.body;
 
   try {

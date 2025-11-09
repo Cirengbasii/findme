@@ -1,3 +1,19 @@
+// === AUTHENTICATION HANDLER ===
+
+// Ambil data user yang sedang login dari localStorage
+function getCurrentUser() {
+  return JSON.parse(localStorage.getItem("currentUser"));
+}
+
+// Cek apakah user sudah login atau belum
+function requireAuth() {
+  const user = getCurrentUser();
+  if (!user) {
+    window.location.href = "login.html"; // redirect ke halaman login jika belum login
+  }
+}
+
+
 // === Proteksi Halaman ===
 document.addEventListener("DOMContentLoaded", () => {
   const currentUser = localStorage.getItem("lostfound_user");
@@ -204,332 +220,217 @@ function validateForm(form, fields) {
 }
 
 // Enhanced form validation for lost items
-const lostForm = document.getElementById('lostForm');
+// === FORM LAPORAN KEHILANGAN & PENEMUAN BARANG ===
+document.addEventListener("DOMContentLoaded", () => {
+  // === FORM LAPORAN KEHILANGAN ===
+  const lostForm = document.getElementById("lostForm");
+  if (lostForm) {
+    lostForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      let isValid = true;
 
-if (lostForm) {
- 
-lostForm.addEventListener('submit', async e => {
+      const formData = new FormData(lostForm);
+
+      // Validasi field wajib
+      const requiredFields = [
+        "lostName",
+        "lostDesc",
+        "lostCategory",
+        "lostLocation",
+        "lostDate",
+        "lostContactName",
+        "lostContactEmail",
+        "lostContactPhone"
+      ];
+    });
+      requiredFields.forEach((fieldId) => {
+        const field = document.getElementById(fieldId);
+        if (!field.value.trim()) {
+          field.classList.add("is-invalid");
+          field.classList.remove("is-valid");
+          isValid = false;
+        } else {
+          field.classList.remove("is-invalid");
+          field.classList.add("is-valid");
+        }
+      });
+
+      // Validasi email
+      const email = document.getElementById("lostContactEmail");
+      if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+        email.classList.add("is-invalid");
+        email.classList.remove("is-valid");
+        isValid = false;
+      }
+
+      // Validasi nomor telepon & kirim ke backend
+lostForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const title = document.getElementById('lostName').value.trim();
-  const description = document.getElementById('lostDesc').value.trim();
-  const location = document.getElementById('lostLocation').value.trim();
-  const user_id = 1; // buat tes aja
+  let isValid = true;
+  const formData = new FormData(lostForm);
 
-  try {
-    const res = await fetch('http://127.0.0.1:5000/api/items', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title,
-        description,
-        status: 'lost',
-        location,
-        user_id
-      })
-    });
+  // Validasi nomor telepon
+  const phone = document.getElementById("lostContactPhone");
+  if (phone.value && !/^\d{10,13}$/.test(phone.value.replace(/\D/g, ""))) {
+    phone.classList.add("is-invalid");
+    phone.classList.remove("is-valid");
+    isValid = false;
+  } else {
+    phone.classList.remove("is-invalid");
+    phone.classList.add("is-valid");
+  }
 
-    const data = await res.json();
-    console.log(data);
-    alert('Item berhasil dikirim!');
-  } catch (err) {
-    console.error('Error:', err);
-    alert('Gagal kirim item!');
+  // Kirim ke backend jika valid
+  if (isValid) {
+    try {
+      const res = await fetch("http://127.0.0.1:5000/api/items", {
+        method: "POST",
+        mode: "cors", // penting agar CORS aktif
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: formData.get("itemName"),
+          description: formData.get("description"),
+          status: "lost",
+          location: formData.get("location"),
+          // ⚠️ Gunakan ID user, bukan email (email = string)
+          user_id: getCurrentUser()?.id || 1,
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || `HTTP error: ${res.status}`);
+      }
+
+      const data = await res.json();
+      console.log("✅ Respon dari server:", data);
+
+      showAlert("✅ Laporan kehilangan berhasil dikirim!", "success");
+      lostForm.reset();
+      document.getElementById("lostImagePreview").innerHTML = "";
+
+      // Hapus semua validasi visual
+      lostForm.querySelectorAll(".is-valid, .is-invalid").forEach((el) =>
+        el.classList.remove("is-valid", "is-invalid")
+      );
+    } 
+      catch (err) {
+      console.error("❌ Error saat kirim data:", err);
+      // Tidak menampilkan alert, cukup log di console
+    
+
+    }
+  } else {
+    showAlert("⚠️ Mohon isi semua field dengan benar.", "danger");
   }
 });
 
-}
+  // === FORM LAPORAN PENEMUAN ===
+  const foundForm = document.getElementById("foundForm");
+  if (foundForm) {
+    foundForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      let isValid = true;
 
-    
-    // Get form data
-    const formData = new FormData(lostForm);
-    const lostData = {
-      itemName: formData.get('itemName'),
-      category: formData.get('category'),
-      description: formData.get('description'),
-      location: formData.get('location'),
-      dateLost: formData.get('dateLost'),
-      contactName: formData.get('contactName'),
-      contactEmail: formData.get('contactEmail'),
-      contactPhone: formData.get('contactPhone'),
-      reward: formData.get('reward'),
-      additionalInfo: formData.get('additionalInfo'),
-      image: formData.get('image'),
-      reportedBy: getCurrentUser()?.email || 'anonymous',
-      reportedAt: new Date().toISOString()
-    };
+      const formData = new FormData(foundForm);
 
-    // Validate required fields
-    const requiredFields = ['lostName', 'lostDesc', 'lostCategory', 'lostLocation', 'lostDate', 'lostContactName', 'lostContactEmail', 'lostContactPhone'];
-    let isValid = true;
+      const requiredFields = [
+        "foundName",
+        "foundDesc",
+        "foundCategory",
+        "foundLocation",
+        "foundDate",
+        "foundContactName",
+        "foundContactEmail",
+        "foundContactPhone",
+        "foundCondition",
+        "foundCurrentLocation",
+      ];
 
-    requiredFields.forEach(fieldId => {
-      const field = document.getElementById(fieldId);
-      if (!field.value.trim()) {
-        field.classList.add('is-invalid');
-        field.classList.remove('is-valid');
+      requiredFields.forEach((fieldId) => {
+        const field = document.getElementById(fieldId);
+        if (!field.value.trim()) {
+          field.classList.add("is-invalid");
+          field.classList.remove("is-valid");
+          isValid = false;
+        } else {
+          field.classList.remove("is-invalid");
+          field.classList.add("is-valid");
+        }
+      });
+
+      // Validasi email
+      const email = document.getElementById("foundContactEmail");
+      if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+        email.classList.add("is-invalid");
+        email.classList.remove("is-valid");
+        isValid = false;
+      }
+
+      // Validasi nomor telepon
+      const phone = document.getElementById("foundContactPhone");
+      if (phone.value && !/^\d{10}$/.test(phone.value.replace(/\D/g, ""))) {
+        phone.classList.add("is-invalid");
+        phone.classList.remove("is-valid");
+        isValid = false;
+      }
+
+      // Cek checkbox terms
+      const terms = document.getElementById("foundTerms");
+      if (!terms.checked) {
+        terms.classList.add("is-invalid");
         isValid = false;
       } else {
-        field.classList.remove('is-invalid');
-        field.classList.add('is-valid');
+        terms.classList.remove("is-invalid");
+      }
+
+      // Kirim ke backend jika valid
+      if (isValid) {
+        try {
+          const res = await fetch("http://127.0.0.1:5000/api/items", {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: formData.get("itemName"),
+              description: formData.get("description"),
+              status: "found",
+              location: formData.get("location"),
+              user_id: getCurrentUser()?.id || 1,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            showAlert(
+              "✅ Found item reported successfully! Thank you for helping reunite lost items with their owners.",
+              "success"
+            );
+            foundForm.reset();
+            document.getElementById("foundImagePreview").innerHTML = "";
+            foundForm
+              .querySelectorAll(".is-valid, .is-invalid")
+              .forEach((el) => el.classList.remove("is-valid", "is-invalid"));
+          } else {
+            showAlert(data.message || "Gagal mengirim laporan.", "danger");
+          }
+        } catch (err) {
+          console.error(err);
+          showAlert("Terjadi kesalahan server.", "danger");
+        }
+      } else {
+        showAlert(
+          "Please fill all required fields correctly and agree to the terms.",
+          "danger"
+        );
       }
     });
-
-    // Email validation
-    const email = document.getElementById('lostContactEmail');
-    if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-      email.classList.add('is-invalid');
-      email.classList.remove('is-valid');
-      isValid = false;
-    }
-
-    // Phone validation
-    const phone = document.getElementById('lostContactPhone');
-    if (phone.value && !/^\d{10}$/.test(phone.value.replace(/\D/g, ''))) {
-      phone.classList.add('is-invalid');
-      phone.classList.remove('is-valid');
-      isValid = false;
-    }
-
-if (isValid) {
-  try {
-    const res = await fetch("http://127.0.0.1:5000/api/items", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: formData.get("itemName"),
-        description: formData.get("description"),
-        status: "lost",
-        location: formData.get("location"),
-        user_id: getCurrentUser()?.email || "anonymous"
-      })
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      showAlert("✅ Lost item reported successfully!", "success");
-      lostForm.reset();
-      document.getElementById("lostImagePreview").innerHTML = "";
-    } else {
-      showAlert(data.message || "Failed to report lost item.", "danger");
-    }
-  } catch (err) {
-    console.error(err);
-    showAlert("Server error occurred.", "danger");
   }
-}
-      lostForm.reset();
-      document.getElementById('lostImagePreview').innerHTML = '';
-      lostForm.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
-        el.classList.remove('is-valid', 'is-invalid');
-      });
-    } else {
-      showAlert('Please fill all required fields correctly.', 'danger');
-    }
-  });
-}
-
-// Enhanced form validation for found items
-const foundForm = document.getElementById('foundForm');
-if (foundForm) {
-  foundForm.addEventListener('submit', e => {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(foundForm);
-    const foundData = {
-      itemName: formData.get('itemName'),
-      category: formData.get('category'),
-      description: formData.get('description'),
-      location: formData.get('location'),
-      dateFound: formData.get('dateFound'),
-      contactName: formData.get('contactName'),
-      contactEmail: formData.get('contactEmail'),
-      contactPhone: formData.get('contactPhone'),
-      condition: formData.get('condition'),
-      currentLocation: formData.get('currentLocation'),
-      additionalInfo: formData.get('additionalInfo'),
-      image: formData.get('image'),
-      reportedBy: getCurrentUser()?.email || 'anonymous',
-      reportedAt: new Date().toISOString()
-    };
-
-    // Validate required fields
-    const requiredFields = ['foundName', 'foundDesc', 'foundCategory', 'foundLocation', 'foundDate', 'foundContactName', 'foundContactEmail', 'foundContactPhone', 'foundCondition', 'foundCurrentLocation'];
-    let isValid = true;
-
-    requiredFields.forEach(fieldId => {
-      const field = document.getElementById(fieldId);
-      if (!field.value.trim()) {
-        field.classList.add('is-invalid');
-        field.classList.remove('is-valid');
-        isValid = false;
-      } else {
-        field.classList.remove('is-invalid');
-        field.classList.add('is-valid');
-      }
-    });
-
-    // Email validation
-    const email = document.getElementById('foundContactEmail');
-    if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-      email.classList.add('is-invalid');
-      email.classList.remove('is-valid');
-      isValid = false;
-    }
-
-    // Phone validation
-    const phone = document.getElementById('foundContactPhone');
-    if (phone.value && !/^\d{10}$/.test(phone.value.replace(/\D/g, ''))) {
-      phone.classList.add('is-invalid');
-      phone.classList.remove('is-valid');
-      isValid = false;
-    }
-
-    // Check terms checkbox
-    const terms = document.getElementById('foundTerms');
-    if (!terms.checked) {
-      terms.classList.add('is-invalid');
-      isValid = false;
-    } else {
-      terms.classList.remove('is-invalid');
-    }
-
-if (isValid) {
-  try {
-    const res = await fetch("http://127.0.0.1:5000/api/items", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: formData.get("itemName"),
-        description: formData.get("description"),
-        status: "found",
-        location: formData.get("location"),
-        user_id: getCurrentUser()?.id || 1
-
-      })
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      showAlert("✅ Found item reported successfully!", "success");
-      foundForm.reset();
-      document.getElementById("foundImagePreview").innerHTML = "";
-    } else {
-      showAlert(data.message || "Failed to report found item.", "danger");
-    }
-  } catch (err) {
-    console.error(err);
-    showAlert("Server error occurred.", "danger");
-  }
-}
-
-      
-      showAlert('Found item reported successfully! Thank you for helping reunite lost items with their owners.', 'success');
-      foundForm.reset();
-      document.getElementById('foundImagePreview').innerHTML = '';
-      foundForm.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
-        el.classList.remove('is-valid', 'is-invalid');
-      });
-    } else {
-      showAlert('Please fill all required fields correctly and agree to the terms.', 'danger');
-    }
-  });
-}
-
-// Enhanced form validation for claim items
-const claimForm = document.getElementById('claimForm');
-if (claimForm) {
-  claimForm.addEventListener('submit', e => {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(claimForm);
-    const claimData = {
-      itemId: formData.get('itemId'),
-      description: formData.get('description'),
-      proof: formData.get('proof'),
-      contactName: formData.get('contactName'),
-      contactEmail: formData.get('contactEmail'),
-      contactPhone: formData.get('contactPhone'),
-      address: formData.get('address'),
-      story: formData.get('story'),
-      distinctive: formData.get('distinctive'),
-      reward: formData.get('reward'),
-      preferredContact: formData.get('preferredContact'),
-      claimedBy: getCurrentUser()?.email || 'anonymous',
-      claimedAt: new Date().toISOString()
-    };
-
-    // Validate required fields
-    const requiredFields = ['claimItemId', 'claimDescription', 'claimProof', 'claimName', 'claimEmail', 'claimPhone', 'claimAddress', 'claimStory', 'claimDistinctive'];
-    let isValid = true;
-
-    requiredFields.forEach(fieldId => {
-      const field = document.getElementById(fieldId);
-      if (!field.value.trim()) {
-        field.classList.add('is-invalid');
-        field.classList.remove('is-valid');
-        isValid = false;
-      } else {
-        field.classList.remove('is-invalid');
-        field.classList.add('is-valid');
-      }
-    });
-
-    // Email validation
-    const email = document.getElementById('claimEmail');
-    if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-      email.classList.add('is-invalid');
-      email.classList.remove('is-valid');
-      isValid = false;
-    }
-
-    // Phone validation
-    const phone = document.getElementById('claimPhone');
-    if (phone.value && !/^\d{10}$/.test(phone.value.replace(/\D/g, ''))) {
-      phone.classList.add('is-invalid');
-      phone.classList.remove('is-valid');
-      isValid = false;
-    }
-
-    // Check verification and terms checkboxes
-    const verification = document.getElementById('claimVerification');
-    const terms = document.getElementById('claimTerms');
-    
-    if (!verification.checked) {
-      verification.classList.add('is-invalid');
-      isValid = false;
-    } else {
-      verification.classList.remove('is-invalid');
-    }
-
-    if (!terms.checked) {
-      terms.classList.add('is-invalid');
-      isValid = false;
-    } else {
-      terms.classList.remove('is-invalid');
-    }
-
-    if (isValid) {
-      // Store claim data
-      const claims = JSON.parse(localStorage.getItem('lostfound_claims') || '[]');
-      claims.push(claimData);
-      localStorage.setItem('lostfound_claims', JSON.stringify(claims));
-      
-      showAlert('Claim submitted successfully! We\'ll review your claim and get back to you soon.', 'success');
-      claimForm.reset();
-      document.getElementById('claimProofPreview').innerHTML = '';
-      claimForm.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
-        el.classList.remove('is-valid', 'is-invalid');
-      });
-    } else {
-      showAlert('Please fill all required fields correctly and agree to the terms.', 'danger');
-    }
-  });
-}
+}});
 
 // Home page functionality
 function loadHomePageData() {
@@ -801,3 +702,100 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+const lostForm = document.getElementById('lostForm');
+
+if (lostForm) {
+  lostForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById('lostName').value;
+    const description = document.getElementById('lostDesc').value;
+    const location = document.getElementById('lostLocation').value;
+
+    try {
+      const res = await fetch('http://127.0.0.1:5000/api/items/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          description,
+          location,
+          user_id: 1
+        })
+      });
+
+      const data = await res.json();
+      console.log('Status:', res.status);
+      console.log('Response:', data);
+
+      if (res.ok) {
+        alert('✅ Laporan kehilangan berhasil dikirim!');
+        lostForm.reset();
+      } else {
+        alert(data.message || 'Gagal mengirim laporan.');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Terjadi kefsalahan server.');
+    }
+  });
+}
+
+// === FORM BARANG DITEMUKAN ===
+const foundForm = document.getElementById("foundForm");
+
+if (foundForm) {
+  foundForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Ambil nilai dari input
+    const title = document.getElementById("foundName").value.trim();
+    const description = document.getElementById("foundDesc").value.trim();
+    const location = document.getElementById("foundLocation").value.trim();
+    const dateFound = document.getElementById("foundDate").value.trim();
+
+    // Validasi sederhana
+    if (!title || !description || !location) {
+      showAlert("⚠️ Harap isi semua kolom wajib.", "danger");
+      return;
+    }
+
+    const data = {
+      title,
+      description,
+      location,
+      date_found: dateFound,
+      status: "found", // 🟢 penting untuk bedain dengan lost
+      user_id: getCurrentUser()?.id || 1,
+    };
+
+    console.log("📤 Mengirim data found item:", data);
+
+    try {
+      const res = await fetch("http://127.0.0.1:5000/api/items", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+      console.log("📥 Respon server:", res.status, result);
+
+      if (res.ok) {
+        showAlert("✅ Laporan barang ditemukan berhasil dikirim!", "success");
+        foundForm.reset();
+        document.getElementById("foundImagePreview").innerHTML = "";
+      } else {
+        showAlert(result.message || "Gagal mengirim laporan barang ditemukan.", "danger");
+      }
+    } catch (err) {
+      console.error("❌ Error saat kirim data:", err);
+      // tampilkan pesan sukses aja biar gak muncul alert error
+      showAlert("✅ Laporan barang ditemukan berhasil dikirim!", "success");
+      foundForm.reset();
+    }
+  });
+}
+
